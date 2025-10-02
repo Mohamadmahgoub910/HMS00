@@ -47,7 +47,7 @@ namespace HMS00.Controllers
         {
             var query = _context.Doctors.AsQueryable();
 
-            // ????? ??? ????? ?? ??????
+            
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 query = query.Where(d => d.Name.Contains(searchTerm) || d.Specialization.Contains(searchTerm));
