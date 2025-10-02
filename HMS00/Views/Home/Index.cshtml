@@ -1,0 +1,24 @@
+﻿@model HMS00.Models.HomeViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@Model.WelcomeMessage</h1>
+    @* <h3 class="display-4">Thank you for choosing our hospital for your healthcare needs </h3>
+    <h3 class="display-4">Here, we strive to provide the highest quality medical care to our patient </h3>
+    <h3 class="display-4">Learn more about our services and specialties </h3> *@
+    <h6>Thank you for choosing our hospital for your healthcare needs.</h6>
+    <h6>Here, we strive to provide the highest quality medical care to our patients.</h6>
+    <h6>Learn more about our services and specialties:</h6>
+    <div class="specialties-container">
+        
+            @foreach (var specialty in Model.Specialties)
+            {
+                <div class="specialty-item">
+                    @specialty
+                </div>
+            }
+    </div>
+    <p>If you have any questions or need assistance, please don't hesitate to contact us.</p>
+</div>

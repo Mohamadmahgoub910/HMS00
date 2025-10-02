@@ -1,0 +1,15 @@
+﻿@model HMS00.Models.Doctor
+<h2>Doctor Details</h2>
+
+<div>
+    <strong>Name:</strong> @Model.Name
+</div>
+<div>
+    <strong>Specialization:</strong> @Model.Specialization
+</div>
+<div>
+    <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/default-doctor.png")"
+         style="width:200px; height:200px; object-fit:cover;" />
+</div>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Back</a>

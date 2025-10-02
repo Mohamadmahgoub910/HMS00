@@ -1,0 +1,113 @@
+﻿@model HMS00.Models.Appointment
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@if (TempData["Success"] != null)
+{
+    <div class="card border-success mb-4">
+        <div class="card-body text-success">
+            <h5 class="card-title">Success</h5>
+            <p class="card-text">@TempData["Success"]</p>
+        </div>
+    </div>
+}
+
+<h2 class="mb-4" id="appointmentHeader">
+    Create Appointment With @(ViewBag.SelectedDoctorName ?? "Select a doctor")
+</h2>
+
+<form asp-action="Create" method="post" id="appointmentForm">
+    <div class="form-group mb-3">
+        <label asp-for="UserId" class="form-label">User</label>
+        <select id="userDropdown" asp-for="UserId" class="form-control" asp-items="@(new SelectList(ViewBag.Users, "UserId", "FullName"))">
+            <option value="">-- Select User --</option>
+        </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="DoctorId" class="form-label">Doctor</label>
+        <select id="doctorDropdown" asp-for="DoctorId" class="form-control" asp-items="@(new SelectList(ViewBag.Doctors, "DoctorId", "Name", ViewBag.SelectedDoctorId))">
+            <option value="">-- Select Doctor --</option>
+        </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="AppointmentDate" class="form-label">Date</label>
+        <input id="appointmentDate" asp-for="AppointmentDate" type="date" class="form-control"
+               value="@Model.AppointmentDate.ToString("yyyy-MM-dd")"
+               min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+        <small class="text-muted">Fridays and Saturdays are not allowed.</small>
+    </div>
+
+    <div class="form-group mb-4">
+        <label class="form-label">Time</label>
+        <select id="timeDropdown" name="AppointmentTimeStr" class="form-control">
+            <option value="">-- Select Time --</option>
+        </select>
+    </div>
+
+    <button type="submit" id="bookBtn" class="btn btn-primary" disabled>Book Appointment</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const doctorDropdown = document.getElementById('doctorDropdown');
+        const userDropdown = document.getElementById('userDropdown');
+        const appointmentDate = document.getElementById('appointmentDate');
+        const timeDropdown = document.getElementById('timeDropdown');
+        const bookBtn = document.getElementById('bookBtn');
+        const header = document.getElementById('appointmentHeader');
+
+        // تحديث العنوان عند تغيير الدكتور
+        doctorDropdown.addEventListener('change', function () {
+            const selectedText = doctorDropdown.options[doctorDropdown.selectedIndex].text;
+            header.innerText = 'Create Appointment With ' + (selectedText !== '-- Select Doctor --' ? selectedText : 'Select a doctor');
+            checkForm();
+            loadAvailableTimes();
+        });
+
+        appointmentDate.addEventListener('change', function () {
+            checkForm();
+            loadAvailableTimes();
+        });
+
+        userDropdown.addEventListener('change', checkForm);
+        timeDropdown.addEventListener('change', checkForm);
+
+        function checkForm() {
+            if (userDropdown.value && doctorDropdown.value && appointmentDate.value && timeDropdown.value) {
+                bookBtn.disabled = false;
+            } else {
+                bookBtn.disabled = true;
+            }
+        }
+
+        function loadAvailableTimes() {
+            timeDropdown.innerHTML = '<option value="">-- Select Time --</option>';
+
+            const doctorId = doctorDropdown.value;
+            const date = appointmentDate.value;
+            if (!doctorId || !date) return;
+
+            const day = new Date(date).getDay();
+            if (day === 5 || day === 6) {
+                alert('Appointments are not allowed on Fridays and Saturdays.');
+                appointmentDate.value = '';
+                return;
+            }
+
+                fetch(`/Appointments/GetAvailableTimes?doctorId=${doctorId}&date=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            timeDropdown.innerHTML = '<option value="">-- Select Time --</option>';
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.value; // بدل Value استخدم value
+                option.text = item.text;   // بدل Text استخدم text
+                timeDropdown.appendChild(option);
+            });
+            checkForm();
+        });
+        }
+    </script>
+}
