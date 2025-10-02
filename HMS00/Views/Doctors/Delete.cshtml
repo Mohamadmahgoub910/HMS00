@@ -1,9 +1,10 @@
 ﻿@model HMS00.Models.Doctor
-<h2>Delete Doctor</h2>
 
-<p>Are you sure you want to delete <strong>@Model.Name</strong>?</p>
+<h2>Confirm Delete</h2>
 
-<form asp-action="DeleteConfirmed" method="post">
+<p>Are you sure you want to delete @Model.Name?</p>
+
+<form asp-action="Delete" method="post">
     <input type="hidden" asp-for="DoctorId" />
     <button type="submit" class="btn btn-danger">Delete</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
